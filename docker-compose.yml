@@ -1,0 +1,79 @@
+version: '2'
+volumes:
+   pgdata:
+     driver: 'local'
+   mysql_data:
+     driver: 'local'
+
+services:
+  mysql:
+    image: mysql:5.6
+    container_name: local_mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+
+  redis:
+    image: redis:3.2
+    container_name: local_redis
+    ports:
+      - 6379:6379
+
+  s3:
+    image: lphoward/fake-s3
+    container_name: local_s3
+    ports:
+      - 4569:4569
+
+  postgresql:
+    image: postgres:9.6
+    container_name: local_postgresql
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  application:
+    image: hyyyyde/php-fpm:1.0.0
+    links:
+      - redis
+      - mysql
+      - s3
+      - postgresql
+    container_name: local_application
+    volumes:
+      - ./application:/var/www/html
+      - ./php-fpm/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/zz-www.conf
+      - /var/run/php-fpm
+      - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
+    environment:
+      - AWS_ACCESS_KEY_ID_S3=s3_credentials_key
+      - AWS_SECRET_KEY_ID_S3=s3_credentials_secret
+      - AWS_ENDPOINT_S3=http://s3:4569
+      - MYSQL_MASTER_HOST=rds
+      - MYSQL_MASTER_PORT=3306
+      - MYSQL_MASTER_DB_NAME=docker
+      - MYSQL_MASTER_USER=root
+      - MYSQL_MASTER_PASSWORD=root
+      - REDSHIFT_HOST=postgresql
+      - REDSHIFT_PORT=5432
+      - REDSHIFT_DB_NAME=docker
+      - REDSHIFT_USER=postgres
+      - REDSHIFT_PASSWORD=
+      - REDIS_DSN=redis://redis:6379
+      - XDEBUG_CONFIG="remote_enable=1 profiler_enable=0 remote_mode=req remote_port=9000 remote_host=${REMOTE_HOST} remote_connect_back=0"
+      - PHP_IDE_CONFIG=serverName=localhost
+
+  web:
+    image: hyyyyde/nginx:1.0.0
+    depends_on:
+      - application
+    ports:
+      - 80:80
+    container_name: local_web
+    volumes_from:
+      - application
