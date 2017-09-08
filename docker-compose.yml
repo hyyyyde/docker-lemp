@@ -54,7 +54,7 @@ services:
       - AWS_ACCESS_KEY_ID_S3=s3_credentials_key
       - AWS_SECRET_KEY_ID_S3=s3_credentials_secret
       - AWS_ENDPOINT_S3=http://s3:4569
-      - MYSQL_MASTER_HOST=rds
+      - MYSQL_MASTER_HOST=mysql
       - MYSQL_MASTER_PORT=3306
       - MYSQL_MASTER_DB_NAME=docker
       - MYSQL_MASTER_USER=root

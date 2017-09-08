@@ -25,6 +25,54 @@ export REMOTE_HOST=${REMOTE_HOST}
 
 
 #
+# sleep...
+#
+function wait_process() {
+  #statements
+  local SLEEP_COUNT=1
+  local SLEEP_MAX_COUNT=$1
+  while [ ${SLEEP_COUNT} -ne ${SLEEP_MAX_COUNT} ]
+  do
+    /bin/echo -n "."
+    sleep 1
+    SLEEP_COUNT=`expr ${SLEEP_COUNT} + 1`
+  done
+}
+
+
+#
+# initialize database
+#
+function init_dababase() {
+
+  echo ""
+  echo "Waiting database service..."
+
+  # dockerizeによるポート監視
+  docker run --rm \
+          --link local_mysql:mysql \
+          --link local_postgresql:postgresql \
+          --network=dockerlemp_default \
+          --entrypoint="" \
+          hyyyyde/dockerize:1.0.0 \
+          dockerize -wait tcp://mysql:3306 -wait tcp://postgresql:5432 -timeout 30s
+
+  # ポート監視終わっても直後にはpostgresqlなどはアクセスできないので少し待つ
+  wait_process 5
+
+  echo "Connected!"
+  echo ""
+
+  echo ""
+  echo "Initializing PostgreSQL..."
+  sh ./postgresql/init.sh
+
+  echo ""
+  echo "Initializing MySQL..."
+  sh ./mysql/init.sh
+}
+
+#
 # docker-compose up
 #
 function docker_compose_up() {
@@ -39,6 +87,8 @@ function docker_compose_up() {
   sedi -e "s/__MEMORY_LIMIT__/${MEMORY_LIMIT}/" ./php-fpm/php.ini
 
   docker-compose up -d
+
+  init_dababase
 }
 
 
