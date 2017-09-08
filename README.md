@@ -54,3 +54,7 @@ MySQL/PostgreSQLコンテナポートの接続確認のため、上記とは別�
 mysql/postgresqlはホスト側のディレクトリにマウントし、データを保持している
 
 
+
+## Docker for MacでPHPStormのデバッグを有効にするために
+
+xdebug.remote_hostをMac側のIPアドレスにしています。  
