@@ -45,19 +45,7 @@ http://localhost/products.php にアクセスすると、テーブル内容を�
 ## できること
 
 PHPStormでブレークポイントを貼り、URLにアクセスするとブレークポイントに止まります。  
-※[Start Listening for PHP Debug Connections]している必要あり。
+※[Start Listening for PHP Debug Connections]している必要あり。  
 
-
-
-## 残念なこと
-
-PHPStormでPHPUnitテストが行えません。  
-MySQLのサーバー名が解決できず、PDO接続できません。  
-ただし、コンテナ内でPHPUnitは実行できます。  
-
-```
-php vendor/phpunit/phpunit/phpunit --configuration app/phpunit.xml tests
-```
-
-コンテナ内で上記コマンドを叩けば、PHPStorm側でブレークポイントにも止まります。  
-※[Start Listening for PHP Debug Connections]している必要あり。
+PHPStormでPHPUnit実行もできます。  
+configurationファイルは `app/phpunit.xml` を参照のこと。  

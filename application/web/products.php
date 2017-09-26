@@ -3,12 +3,15 @@
 require_once __DIR__ . "/../app/autoload.php";
 
 $product = new \Model\Product();
-$product_array = $product->getAll();
+$stmt = $product->getAll();
 
-if (!$product_array) {
-    echo "Not found products";
+
+foreach ($stmt as $row) {
+    $rows[] = $row;
 }
 
-foreach ($product_array as $row) {
-    echo sprintf("[id: %s] [name: %s]<br>\n", $row["id"], $row["name"]);
+if (isset($rows)) {
+    echo json_encode($rows);
+} else {
+    echo "Not found products." . PHP_EOL;
 }

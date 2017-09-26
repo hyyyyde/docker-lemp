@@ -88,6 +88,14 @@ function docker_compose_up() {
 
   docker-compose up -d
 
+  # phpunit.xmlをコピー
+  cp ./application/app/phpunit.xml.dist ./application/app/phpunit.xml
+  # GATEWAY_IPを取得
+  GATEWAY_IP=`docker inspect local_application --format="{{ .NetworkSettings.Networks.dockerlemp_default.Gateway }}"`
+  # 置換する
+  # これをしないとPHPStormでPHPUnit実行できない
+  sedi -e "s/GATEWAY_IP/${GATEWAY_IP}/g" ./application/app/phpunit.xml
+
   init_dababase
 }
 

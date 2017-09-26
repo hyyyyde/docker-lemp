@@ -4,6 +4,9 @@ namespace Model;
 
 class Product
 {
+    /**
+     * @var \PDO
+     */
     private $pdo;
 
     public function __construct()
@@ -12,14 +15,14 @@ class Product
     }
 
     /**
-     * @return array|null
+     * @return \PDOStatement
      */
-    public function getAll(): ?array
+    public function getAll(): \PDOStatement
     {
         $sql = "SELECT * FROM product";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt;
     }
 
     public function truncate()

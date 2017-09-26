@@ -52,4 +52,4 @@ crashlytics-build.properties
 fabric.properties
 
 vendor
-
+app/phpunit.xml
